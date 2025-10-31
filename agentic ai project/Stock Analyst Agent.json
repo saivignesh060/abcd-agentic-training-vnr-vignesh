@@ -1,0 +1,446 @@
+{
+  "name": "Stock Analyst Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5707468f-cc55-49c5-ad10-fbc114d8e7e6",
+      "name": "Telegram Trigger",
+      "webhookId": "c406b0a1-4419-4345-b541-eda4e515f13c",
+      "credentials": {
+        "telegramApi": {
+          "id": "VSqWko1pasw4hD9E",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://www.alphavantage.co/query",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "function",
+              "value": "TIME_SERIES_DAILY"
+            },
+            {
+              "name": "symbol",
+              "value": "={{ $json.message.text }}"
+            },
+            {
+              "name": "apikey",
+              "value": "IZALZP51WC4E2G7W"
+            }
+          ]
+        },
+        "options": {
+          "queryParameterArrays": "repeat"
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "479edc1c-43dd-4d8a-a235-3aec42706e4c",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ffcd5f34-6e7b-4c2c-b485-584c7777ff77",
+              "name": "recent_prices",
+              "value": "={{ Object.entries($json[\"Time Series (Daily)\"]).slice(0, 5).map(entry => ({ date: entry[0], \"close\": entry[1][\"4. close\"] })) }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "deeb855c-e940-469d-b565-5612e33bdca9",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "chatId": "6047474511",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1600,
+        0
+      ],
+      "id": "59a8c641-35da-4150-aeec-a122e9a9bdbd",
+      "name": "Send a text message",
+      "webhookId": "11c59e21-3bdb-42ed-8da5-ad5effc0dadc",
+      "credentials": {
+        "telegramApi": {
+          "id": "VSqWko1pasw4hD9E",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://www.alphavantage.co/query",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "function",
+              "value": "SMA"
+            },
+            {
+              "name": "symbol",
+              "value": "={{ $json.message.text }}"
+            },
+            {
+              "name": "interval",
+              "value": "daily"
+            },
+            {
+              "name": "time_period",
+              "value": "20"
+            },
+            {
+              "name": "series_type",
+              "value": "close"
+            },
+            {
+              "name": "apikey",
+              "value": "IZALZP51WC4E2G7W"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        224,
+        288
+      ],
+      "id": "a60fa58c-1365-4f52-bb60-93798d4b72b4",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "31bd5e8b-9830-4ae6-9c4c-b355801ff086",
+              "name": "latest_sma",
+              "value": "={{ Object.values($json[\"Technical Analysis: SMA\"])[0].SMA }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        432,
+        272
+      ],
+      "id": "a8f13241-94e8-4524-a2cb-81a9df81c957",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        832,
+        -16
+      ],
+      "id": "025cd1e2-fcbf-4c29-a856-6fb9ac466ef5",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "url": "https://www.alphavantage.co/query",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "function",
+              "value": "OVERVIEW"
+            },
+            {
+              "name": "symbol",
+              "value": "={{ $json.message.text }}"
+            },
+            {
+              "name": "apikey",
+              "value": "IZALZP51WC4E2G7W"
+            }
+          ]
+        },
+        "options": {
+          "queryParameterArrays": "repeat"
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        208,
+        -240
+      ],
+      "id": "fdd3f8a4-c169-47ba-997c-c66abef6018e",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c9b46440-e018-4cf7-9e02-ba962990444c",
+              "name": "company_name",
+              "value": "={{ $json.Name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        -240
+      ],
+      "id": "bec09578-db21-4f38-8fe0-21e72295e650",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=recent_prices: {{ JSON.stringify($json.recent_prices) }}\nlatest_sma: {{ $json.latest_sma }}\ncompany_name: {{ $json.company_name }}",
+        "options": {
+          "systemMessage": "You are a financial analyst agent. Your goal is to provide a comprehensive analysis.\n\nFirst, you will be given technical data from the previous node. This includes:\n- `recent_prices`: 5-day price history\n- `latest_sma`: 20-day SMA\n- `company_name`: The company's name\n\nSecond, you MUST use the `SerpApi` tool to find out *why* the price has moved. Formulate a good `search_query` (like the company's name + \"financial news\") to get this context.\n\nFinally, synthesize *all* information (technicals + news) into a single, comprehensive answer for the user.\n\nYour final answer to the user must include:\n1.  **Technical Trend:** The 5-day price trend.\n2.  **Momentum:** If the price is above/below the 20-day SMA.\n3.  **News Context:** The *most important* news headline or snippet that seems to be driving the price.\n\n**IMPORTANT:** Do not give any financial advice, predictions, or suggestions to buy, hold, or sell.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1168,
+        0
+      ],
+      "id": "4b032fa2-d8de-4637-9687-1daefdf3b246",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1088,
+        224
+      ],
+      "id": "42bb86df-3571-4647-b424-5d2535023f2a",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7CezrrMGmqC7nnSp",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        208
+      ],
+      "id": "a4c06086-e1b6-4b48-ae4b-1ef9975fd14c",
+      "name": "SerpAPI1",
+      "credentials": {
+        "serpApi": {
+          "id": "rW6O9ibOoDqnW0A0",
+          "name": "SerpAPI account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpAPI1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "468b82ff-d26d-4784-9814-e85311cad453",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a385296d7614182429fb33eba991d9f9d1b3a840c40d2bd6b65e423c0ec77469"
+  },
+  "id": "JZRdxNLOpZwtNsCR",
+  "tags": []
+}
