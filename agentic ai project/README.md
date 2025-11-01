@@ -186,3 +186,5 @@ You can handle this by adding an **IF node** after each of the three HTTP Reques
 * **Log to Database:** Use the Google Sheets or Postgres node as a tool (like we discussed) to log every analysis the AI performs.  
 * **More Indicators:** Add more parallel branches to fetch other technical indicators like RSI or MACD and feed them all to the AI for an even deeper analysis.  
 * **Error Notifications:** On the error path, send a push notification (like ntfy.sh) to your *own* phone so you know the bot failed.
+**PPT** https://github.com/saivignesh060/abcd-agentic-training-vnr-vignesh/blob/8df9c77fb3c4a57c3bc9a502c2213e8cfae9d20d/agentic%20ai%20project/Stock%20Analyst%20Agent%20Presentation.pptx
+**Demo Video**  https://github.com/saivignesh060/abcd-agentic-training-vnr-vignesh/blob/8df9c77fb3c4a57c3bc9a502c2213e8cfae9d20d/agentic%20ai%20project/DEMO.wmv
